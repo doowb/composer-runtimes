@@ -1,0 +1,28 @@
+{
+  "name": "composer-runtimes",
+  "description": "Write composer task runtimes to a stream.",
+  "version": "0.1.0",
+  "homepage": "https://github.com/doowb/composer-runtimes",
+  "author": "Brian Woodward (https://github.com/doowb)",
+  "repository": "doowb/composer-runtimes",
+  "bugs": {
+    "url": "https://github.com/doowb/composer-runtimes/issues"
+  },
+  "license": "MIT",
+  "files": [
+    "index.js"
+  ],
+  "main": "index.js",
+  "engines": {
+    "node": ">=0.10.0"
+  },
+  "scripts": {
+    "test": "mocha"
+  },
+  "dependencies": {},
+  "devDependencies": {
+    "mocha": "*",
+    "should": "*"
+  },
+  "keywords": []
+}
