@@ -1,49 +1,64 @@
-# composer-runtimes [![NPM version](https://badge.fury.io/js/composer-runtimes.svg)](http://badge.fury.io/js/composer-runtimes)  [![Build Status](https://travis-ci.org/doowb/composer-runtimes.svg)](https://travis-ci.org/doowb/composer-runtimes) 
+# composer-runtimes [![NPM version](https://badge.fury.io/js/composer-runtimes.svg)](http://badge.fury.io/js/composer-runtimes)  [![Build Status](https://travis-ci.org/doowb/composer-runtimes.svg)](https://travis-ci.org/doowb/composer-runtimes)
 
-> Write composer task runtimes to a stream.
+> Write composer task start and end times to a stream.
 
-## Install with [npm](npmjs.org)
+Install with [npm](https://www.npmjs.com/)
 
-```bash
-npm i composer-runtimes --save
+```sh
+$ npm i composer-runtimes --save
 ```
 
 ## Usage
 
 ```js
-var composerRuntimes = require('composer-runtimes');
+var composer = require('composer');
+require('composer-runtimes')(composer);
 ```
 
 ## API
-<!-- add a path or glob pattern for files with code comments to use for docs  -->
-{%= apidocs("index.js") %}
 
-## Related projects
-<!-- add an array of related projects, then un-escape the helper -->
-{%= related([]) %}  
+### [runtimes](index.js#L29)
 
-## Running tests
-Install dev dependencies.
+Listen to composer events and output runtime information.
 
-```bash
-npm i -d && npm test
+**Params**
+
+* `composer` **{Object}**: An instance of a Composer object.
+* `options` **{Object}**: Options to specify color output and stream to write to.
+
+**Example**
+
+```js
+require('composer-runtimes')(composer);
 ```
 
+## Related projects
+
+[composer](https://github.com/jonschlinkert/composer): The build system used to create verb, assemble and generate.
+
+## Running tests
+
+Install dev dependencies:
+
+```sh
+$ npm i -d && npm test
+```
 
 ## Contributing
-Pull requests and stars are always welcome. For bugs and feature requests, [please create an issue](https://github.com/doowb/composer-runtimes/issues)
 
+Pull requests and stars are always welcome. For bugs and feature requests, [please create an issue](https://github.com/doowb/composer-runtimes/issues/new)
 
 ## Author
 
 **Brian Woodward**
- 
+
 + [github/doowb](https://github.com/doowb)
-+ [twitter/doowb](http://twitter.com/doowb) 
++ [twitter/doowb](http://twitter.com/doowb)
 
 ## License
+
 Copyright © 2015 Brian Woodward
-Released under the MIT license
+Released under the MIT license.
 
 ***
 

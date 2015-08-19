@@ -1,6 +1,6 @@
 {
   "name": "composer-runtimes",
-  "description": "Write composer task runtimes to a stream.",
+  "description": "Write composer task start and end times to a stream.",
   "version": "0.1.0",
   "homepage": "https://github.com/doowb/composer-runtimes",
   "author": "Brian Woodward (https://github.com/doowb)",
@@ -29,5 +29,12 @@
     "ansi-red": "^0.1.1",
     "ansi-yellow": "^0.1.1",
     "lazy-cache": "^0.2.0"
+  },
+  "verb": {
+    "related": {
+      "list": [
+        "composer"
+      ]
+    }
   }
 }

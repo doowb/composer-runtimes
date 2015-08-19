@@ -14,7 +14,19 @@ lazy('ansi-green');
 lazy('ansi-cyan');
 lazy('ansi-red');
 
-module.exports = function (composer, options) {
+/**
+ * Listen to composer events and output runtime information.
+ *
+ * ```js
+ * require('composer-runtimes')(composer);
+ * ```
+ *
+ * @param  {Object} `composer` An instance of a Composer object.
+ * @param  {Object} `options` Options to specify color output and stream to write to.
+ * @api public
+ */
+
+function runtimes (composer, options) {
   options = options || {};
 
   if (typeof options.colors === 'undefined') {
@@ -64,3 +76,9 @@ module.exports = function (composer, options) {
     }
   });
 };
+
+/**
+ * Exposes `runtimes`
+ */
+
+module.exports = runtimes;
