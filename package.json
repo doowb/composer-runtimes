@@ -20,6 +20,14 @@
     "test": "mocha"
   },
   "devDependencies": {
+    "composer": "^0.2.0",
     "mocha": "*"
+  },
+  "dependencies": {
+    "ansi-cyan": "^0.1.1",
+    "ansi-green": "^0.1.1",
+    "ansi-red": "^0.1.1",
+    "ansi-yellow": "^0.1.1",
+    "lazy-cache": "^0.2.0"
   }
 }
