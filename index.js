@@ -9,10 +9,10 @@
 
 var lazy = require('lazy-cache')(require);
 lazy('util');
-lazy('ansi-yellow');
-lazy('ansi-green');
-lazy('ansi-cyan');
-lazy('ansi-red');
+lazy('ansi-red', 'red');
+lazy('ansi-cyan', 'cyan');
+lazy('ansi-green', 'green');
+lazy('ansi-yellow', 'yellow');
 
 /**
  * Listen to composer events and output runtime information.
@@ -46,31 +46,25 @@ function runtimes (composer, options) {
   }
 
   // setup some listeners
-  composer.on('task.starting', function (info) {
-    var task = info.task;
-    var run = info.run;
+  composer.on('starting', function (task, run) {
     if (options.colors) {
-      writeln(lazy.ansiGreen('starting'), lazy.ansiCyan('[' + task.name + ']'), run.start.toTimeString());
+      writeln(lazy.green('starting'), lazy.cyan('[' + task.name + ']'), run.start.toTimeString());
     } else {
       writeln('starting', '[' + task.name + ']', run.start.toTimeString());
     }
   });
 
-  composer.on('task.finished', function (info) {
-    var task = info.task;
-    var run = info.run;
+  composer.on('finished', function (task, run) {
     if (options.colors) {
-      writeln(lazy.ansiYellow('finished'), lazy.ansiCyan('[' + task.name + ']'), run.end.toTimeString());
+      writeln(lazy.yellow('finished'), lazy.cyan('[' + task.name + ']'), run.end.toTimeString());
     } else {
       writeln('finished', '[' + task.name + ']', run.end.toTimeString());
     }
   });
 
-  composer.on('task.error', function (err, info) {
-    console.error(info);
-    var task = info.task;
+  composer.on('error', function (err, task, run) {
     if (options.colors) {
-      writeln(lazy.ansiRed('ERROR'), lazy.ansiCyan('[' + task.name + ']'), err);
+      writeln(lazy.red('ERROR'), lazy.cyan('[' + task.name + ']'), err);
     } else {
       writeln('ERROR', '[' + task.name + ']', err);
     }

@@ -69,6 +69,24 @@ describe('composer-runtimes', function () {
       done();
     });
   });
+
+  it('should listen for errors on tasks', function (done) {
+    var restore = captureOutput(process.stderr);
+    runtimes(composer, {colors: false});
+    var count = 0;
+    composer.task('test', function (cb) {
+      cb(new Error('this is an error'));
+    });
+    composer.run('test', function (err) {
+      var output = restore();
+      assert.equal(output.length, 2);
+      assert.notEqual(output[0][0].indexOf('starting'), -1);
+      assert.equal(output[1][0].indexOf('finished'), -1);
+      assert.notEqual(output[1][0].indexOf('ERROR'), -1);
+      if (err) return done();
+      done(new Error('Expected an error'));
+    });
+  });
 });
 
 function captureOutput (stream) {
