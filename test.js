@@ -87,6 +87,15 @@ describe('composer-runtimes', function () {
       done(new Error('Expected an error'));
     });
   });
+
+  it('should show error when task is undefined', function () {
+    var restore = captureOutput(process.stderr);
+    runtimes(composer);
+    composer.emit('error', new Error('this is an error without a task'));
+    var output = restore();
+    assert.equal(output.length, 1);
+    assert.notEqual(output[0][0].indexOf('ERROR'), -1);
+  });
 });
 
 function captureOutput (stream) {

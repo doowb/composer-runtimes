@@ -64,9 +64,9 @@ function runtimes (composer, options) {
 
   composer.on('error', function (err, task, run) {
     if (options.colors) {
-      writeln(lazy.red('ERROR'), lazy.cyan('[' + task.name + ']'), err);
+      writeln(lazy.red('ERROR'), (task && task.name ? lazy.cyan('[' + task.name + ']') : ''), err);
     } else {
-      writeln('ERROR', '[' + task.name + ']', err);
+      writeln('ERROR', (task && task.name ? '[' + task.name + ']' : ''), err);
     }
   });
 };
