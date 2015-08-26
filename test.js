@@ -1,7 +1,7 @@
 'use strict';
 
 var assert = require('assert');
-var Composer = require('composer').Composer;
+var Composer = require('composer');
 var runtimes = require('./');
 
 var composer;
