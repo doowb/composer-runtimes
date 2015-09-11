@@ -27,6 +27,11 @@ lazy('ansi-yellow', 'yellow');
  */
 
 function runtimes (composer, options) {
+  if (composer.runtimes) {
+    return;
+  }
+  composer.runtimes = true;
+
   options = options || {};
 
   if (typeof options.colors === 'undefined') {
