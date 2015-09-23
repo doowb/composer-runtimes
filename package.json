@@ -27,10 +27,8 @@
     "ansi-cyan": "^0.1.1",
     "ansi-green": "^0.1.1",
     "ansi-grey": "^0.1.1",
-    "ansi-red": "^0.1.1",
-    "ansi-yellow": "^0.1.1",
     "extend-shallow": "^2.0.1",
-    "lazy-cache": "^0.2.2",
+    "lazy-cache": "^0.2.3",
     "success-symbol": "^0.1.0",
     "time-stamp": "^0.1.0"
   },
