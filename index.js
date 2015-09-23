@@ -7,74 +7,70 @@
 
 'use strict';
 
-var lazy = require('lazy-cache')(require);
-lazy('util');
-lazy('ansi-red', 'red');
-lazy('ansi-cyan', 'cyan');
-lazy('ansi-green', 'green');
-lazy('ansi-yellow', 'yellow');
+var util = require('util');
+var utils = require('./utils');
 
 /**
  * Listen to composer events and output runtime information.
  *
  * ```js
- * require('composer-runtimes')(composer);
+ * var app = new Composer();
+ * runtimes({colors: false})(app);
  * ```
  *
- * @param  {Object} `composer` An instance of a Composer object.
  * @param  {Object} `options` Options to specify color output and stream to write to.
  * @api public
  */
 
-function runtimes (composer, options) {
-  if (composer.runtimes) {
-    return;
-  }
-  composer.runtimes = true;
-
+function runtimes (options) {
   options = options || {};
 
-  if (typeof options.colors === 'undefined') {
-    options.colors = true;
-  }
-
-  // use the stderr stream by default so other output
-  // can be piped into a file with `> file.txt`
-  var stream = options.stream || process.stderr;
-
-  function write() {
-    stream.write(lazy.util.format.apply(null, arguments));
-  }
-
-  function writeln() {
-    write.apply(null, [].slice.call(arguments).concat(['\n']));
-  }
-
-  // setup some listeners
-  composer.on('starting', function (task, run) {
-    if (options.colors) {
-      writeln(lazy.green('starting'), lazy.cyan('[' + task.name + ']'), run.start.toTimeString());
-    } else {
-      writeln('starting', '[' + task.name + ']', run.start.toTimeString());
+  return function plugin (app) {
+    if (app.runtimes) {
+      return;
     }
-  });
+    app.runtimes = true;
+    var opts = utils.extend({}, options, app.options && app.options.runtimes);
 
-  composer.on('finished', function (task, run) {
-    if (options.colors) {
-      writeln(lazy.yellow('finished'), lazy.cyan('[' + task.name + ']'), run.end.toTimeString());
-    } else {
-      writeln('finished', '[' + task.name + ']', run.end.toTimeString());
+    if (typeof opts.colors === 'undefined') {
+      opts.colors = true;
     }
-  });
 
-  composer.on('error', function (err, task, run) {
-    if (options.colors) {
-      writeln(lazy.red('ERROR'), (task && task.name ? lazy.cyan('[' + task.name + ']') : ''), err);
-    } else {
-      writeln('ERROR', (task && task.name ? '[' + task.name + ']' : ''), err);
-    }
-  });
+    // use the stderr stream by default so other output
+    // can be piped into a file with `> file.txt`
+    var stream = opts.stream || process.stderr;
+    var log = write(stream);
+    var time = utils.time.bind(utils.time, 'HH:mm:ss:ms');
+
+    // setup some listeners
+    app.on('starting', function (task, run) {
+      if (opts.colors) {
+        log('', '  ', utils.grey(time(run.start)), 'starting', utils.cyan('[' + task.name + ']'), '\n');
+      } else {
+        log('', ' ', time(run.start), 'starting', '[' + task.name + ']', '\n');
+      }
+    });
+
+    app.on('finished', function (task, run) {
+      if (opts.colors) {
+        log('', utils.green(utils.success), '', utils.grey(time(run.end)), 'finished', utils.cyan('[' + task.name + ']'), '\n');
+      } else {
+        log('', utils.success, '', time(run.end), 'finished', '[' + task.name + ']', '\n');
+      }
+    });
+  };
 };
+
+function write(stream) {
+  return function () {
+    var len = arguments.length, i = 0;
+    var args = new Array(len);
+    while (len--) {
+      args[i] = arguments[i++];
+    }
+    stream.write(args.join(' '));
+  };
+}
 
 /**
  * Exposes `runtimes`
