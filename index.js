@@ -40,7 +40,7 @@ function runtimes (options) {
     // can be piped into a file with `> file.txt`
     var stream = opts.stream || process.stderr;
     var log = write(stream);
-    var time = utils.time.bind(utils.time, 'HH:mm:ss:ms');
+    var time = utils.time.bind(utils.time, 'HH:mm:ss.ms');
 
     // setup some listeners
     app.on('starting', function (task, run) {
