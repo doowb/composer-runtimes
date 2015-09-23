@@ -46,15 +46,15 @@ function runtimes (options) {
     // setup some listeners
     app.on('starting', function (task, run) {
       if (opts.colors) {
-        log('', '  ', utils.grey(time(run.start)), 'starting', utils.cyan('[' + task.name + ']'), '\n');
+        log('', utils.grey(time(run.start)), 'starting', utils.cyan('[' + task.name + ']'), '\n');
       } else {
-        log('', ' ', time(run.start), 'starting', '[' + task.name + ']', '\n');
+        log('', time(run.start), 'starting', '[' + task.name + ']', '\n');
       }
     });
 
     app.on('finished', function (task, run) {
       if (opts.colors) {
-        log('', utils.green(utils.success), '', utils.grey(time(run.end)), 'finished', utils.cyan('[' + task.name + ']'), '\n');
+        log('', utils.grey(time(run.end)), 'finished', utils.cyan('[' + task.name + ']'), '\n');
       } else {
         log('', utils.success, '', time(run.end), 'finished', '[' + task.name + ']', '\n');
       }
