@@ -14,11 +14,12 @@ var utils = require('./utils');
  * Listen to composer events and output runtime information.
  *
  * ```js
- * var app = new Composer();
- * runtimes({colors: false})(app);
+ * runtimes({colors: false})(composer);
  * ```
  *
  * @param  {Object} `options` Options to specify color output and stream to write to.
+ * @param  {Boolean} `options.colors` Show ansi colors or not. `true` by default
+ * @param  {Stream} `options.stream` Output stream to write to. `process.stderr` by default.
  * @api public
  */
 
