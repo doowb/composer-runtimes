@@ -37,7 +37,8 @@ runtimes({colors: false})(composer);
 
 ## Related projects
 
-[composer](https://www.npmjs.com/package/composer): API-first task runner with three methods: task, run and watch. | [homepage](https://github.com/jonschlinkert/composer)
+* [composer](https://www.npmjs.com/package/composer): API-first task runner with three methods: task, run and watch. | [homepage](https://github.com/jonschlinkert/composer)
+* [composer-errors](https://www.npmjs.com/package/composer-errors): Listen for and output Composer errors. | [homepage](https://github.com/doowb/composer-errors)
 
 ## Running tests
 
