@@ -124,6 +124,21 @@ describe('composer-runtimes', function () {
     assert.equal(output.length, 1);
     assert.notEqual(output[0][0].indexOf('ERROR'), -1);
   });
+
+  it('should make output look nice [formatting only test]', function (done) {
+    runtimes()(composer);
+    var len = 10, i = 0;
+    var tasks = [];
+    while (len--) {
+      var key = 'task-' + (i++);
+      tasks.push(key);
+      composer.task(key, function (cb) {cb();});
+    }
+    composer.run(tasks, function (err) {
+      if (err) return done(err);
+      done();
+    });
+  });
 });
 
 function captureOutput (stream) {
