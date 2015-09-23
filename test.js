@@ -2,6 +2,7 @@
 
 var assert = require('assert');
 var Composer = require('composer');
+var capture = require('capture-stream');
 var runtimes = require('./');
 
 var composer;
@@ -12,7 +13,7 @@ describe('composer-runtimes', function () {
   });
 
   it('should add listeners to composer', function (done) {
-    var restore = captureOutput(process.stderr);
+    var restore = capture(process.stderr);
     runtimes()(composer);
     var count = 0;
     composer.task('test', function (cb) {
@@ -35,7 +36,7 @@ describe('composer-runtimes', function () {
   });
 
   it('should output messages without colors', function (done) {
-    var restore = captureOutput(process.stderr);
+    var restore = capture(process.stderr);
     runtimes({colors: false})(composer);
     var count = 0;
     composer.task('test', function (cb) {
@@ -60,7 +61,7 @@ describe('composer-runtimes', function () {
   });
 
   it('should output messages to another stream', function (done) {
-    var restore = captureOutput(process.stdout);
+    var restore = capture(process.stdout);
     runtimes({stream: process.stdout})(composer);
     var count = 0;
     composer.task('test', function (cb) {
@@ -83,7 +84,7 @@ describe('composer-runtimes', function () {
   });
 
   it('should listen for errors on tasks', function (done) {
-    var restore = captureOutput(process.stderr);
+    var restore = capture(process.stderr);
     runtimes({colors: false})(composer);
 
     // see composer-errors for error messages
@@ -111,7 +112,7 @@ describe('composer-runtimes', function () {
   });
 
   it('should show error when task is undefined', function () {
-    var restore = captureOutput(process.stderr);
+    var restore = capture(process.stderr);
     runtimes()(composer);
 
     // see composer-errors for error messages
@@ -140,15 +141,3 @@ describe('composer-runtimes', function () {
     });
   });
 });
-
-function captureOutput (stream) {
-  var output = [];
-  var write = stream.write;
-  stream.write = function () {
-    output.push([].slice.call(arguments));
-  };
-  return function restore () {
-    stream.write = write;
-    return output;
-  };
-}
