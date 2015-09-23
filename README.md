@@ -2,6 +2,8 @@
 
 > Write composer task start and end times to a stream.
 
+_HEADS UP_ Api changes in `0.4.0`
+
 Install with [npm](https://www.npmjs.com/)
 
 ```sh
