@@ -21,8 +21,8 @@
     "test": "mocha"
   },
   "devDependencies": {
-    "capture-stream": "^0.1.0",
-    "composer": "^0.4.1",
+    "capture-stream": "^0.1.1",
+    "composer": "^0.6.0",
     "mocha": "*"
   },
   "dependencies": {
@@ -32,7 +32,7 @@
     "extend-shallow": "^2.0.1",
     "lazy-cache": "^0.2.3",
     "success-symbol": "^0.1.0",
-    "time-stamp": "^0.1.0"
+    "time-stamp": "^0.1.1"
   },
   "verb": {
     "related": {
