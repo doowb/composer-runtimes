@@ -20,7 +20,7 @@ describe('composer-runtimes', function () {
       count++;
       cb();
     });
-    composer.run('test', function (err) {
+    composer.build('test', function (err) {
       var output = restore();
       if (err) return done(err);
       try {
@@ -43,7 +43,7 @@ describe('composer-runtimes', function () {
       count++;
       cb();
     });
-    composer.run('test', function (err) {
+    composer.build('test', function (err) {
       var output = restore();
       if (err) return done(err);
       try {
@@ -68,7 +68,7 @@ describe('composer-runtimes', function () {
       count++;
       cb();
     });
-    composer.run('test', function (err) {
+    composer.build('test', function (err) {
       var output = restore();
       if (err) return done(err);
       try {
@@ -96,7 +96,7 @@ describe('composer-runtimes', function () {
       cb(new Error('this is an error'));
     });
 
-    composer.run('test', function (err) {
+    composer.build('test', function (err) {
       var output = restore();
       try {
         assert.equal(output.length, 2);
@@ -135,7 +135,7 @@ describe('composer-runtimes', function () {
       tasks.push(key);
       composer.task(key, function (cb) {cb();});
     }
-    composer.run(tasks, function (err) {
+    composer.build(tasks, function (err) {
       if (err) return done(err);
       done();
     });

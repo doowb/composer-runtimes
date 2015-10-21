@@ -7,8 +7,10 @@
 
 'use strict';
 
-var util = require('util');
 var utils = require('./utils');
+utils.clear = function(str) {
+  return str;
+};
 
 /**
  * Listen to composer events and output runtime information.
@@ -41,26 +43,52 @@ function runtimes (options) {
     // can be piped into a file with `> file.txt`
     var stream = opts.stream || process.stderr;
     var log = write(stream);
-    var time = utils.time.bind(utils.time, 'HH:mm:ss.ms');
 
     // setup some listeners
     app.on('starting', function (task, run) {
-      if (opts.colors) {
-        log('', utils.grey(time(run.start)), 'starting', utils.cyan('[' + task.name + ']'), '\n');
-      } else {
-        log('', time(run.start), 'starting', '[' + task.name + ']', '\n');
-      }
+      log('', defaultTime(run, 'start', opts), 'starting', defaultName(task, opts), '\n');
     });
 
     app.on('finished', function (task, run) {
-      if (opts.colors) {
-        log('', utils.grey(time(run.end)), 'finished', utils.cyan('[' + task.name + ']'), '\n');
-      } else {
-        log('', utils.success, '', time(run.end), 'finished', '[' + task.name + ']', '\n');
-      }
+      log('', defaultTime(run, 'end', opts), 'finished', defaultName(task, opts), defaultDuration(run, opts), '\n');
     });
   };
 };
+
+function defaultName(task, options) {
+  options = options || {};
+  if (typeof options.defaultName === 'function') {
+    return options.defaultName.call(task, task.name, options);
+  }
+  var color = options.colors ? 'cyan' : 'clear';
+  return utils[color](task.name);
+}
+
+function defaultTime(run, type, options) {
+  options = options || {};
+  if (typeof options.defaultTime === 'function') {
+    return options.defaultTime.call(run, run.date[type], options);
+  }
+  var color = options.colors ? 'grey' : 'clear';
+  return utils[color](utils.time('HH:mm:ss.ms', run.date[type]));
+}
+
+function defaultDuration(run, options) {
+  options = options || {};
+  if (typeof options.defaultDuration === 'function') {
+    return options.defaultDuration.call(run, run.hr.duration, options);
+  }
+  var color = options.colors ? 'magenta' : 'clear';
+  return utils[color](utils.pretty(run.hr.duration, 2, 'μs'));
+}
+
+
+
+/**
+ * Write out strings to a stream.
+ * @param  {Stream} `stream` Stream to write to (e.g. process.stdout)
+ * @return {Function} Function to do the writing.
+ */
 
 function write(stream) {
   return function () {
