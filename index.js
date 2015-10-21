@@ -22,6 +22,9 @@ utils.clear = function(str) {
  * @param  {Object} `options` Options to specify color output and stream to write to.
  * @param  {Boolean} `options.colors` Show ansi colors or not. `true` by default
  * @param  {Stream} `options.stream` Output stream to write to. `process.stderr` by default.
+ * @param  {Function} `options.displayName` Override how the task name is displayed. [See below][displayName]
+ * @param  {Function} `options.displayTime` Override how the starting and finished times are displayed. [See below][displayTime]
+ * @param  {Function} `options.displayDuration` Override how the run duration is displayed. [See below][displayDuration]
  * @api public
  */
 
@@ -46,37 +49,101 @@ function runtimes (options) {
 
     // setup some listeners
     app.on('starting', function (task, run) {
-      log('', defaultTime(run, 'start', opts), 'starting', defaultName(task, opts), '\n');
+      log('', displayTime(run, 'start', opts), 'starting', displayName(task, opts), '\n');
     });
 
     app.on('finished', function (task, run) {
-      log('', defaultTime(run, 'end', opts), 'finished', defaultName(task, opts), defaultDuration(run, opts), '\n');
+      log('', displayTime(run, 'end', opts), 'finished', displayName(task, opts), displayDuration(run, opts), '\n');
     });
   };
 };
 
-function defaultName(task, options) {
+/**
+ * Override how the task name is displayed.
+ *
+ * ```js
+ * var options = {
+ *   displayName: function(name, opts) {
+ *     // `this` is the entire `task` object
+ *     return 'Task: ' + (opts.colors ? cyan(name) : name);
+ *   }
+ * };
+ *
+ * composer.use(runtimes(options));
+ * ```
+ *
+ * @param  {String} `name` Task name
+ * @param  {Object} `options` Options passed to `runtimes` and extend with application specific options.
+ * @return {String} display name
+ * @api public
+ */
+
+function displayName(task, options) {
   options = options || {};
-  if (typeof options.defaultName === 'function') {
-    return options.defaultName.call(task, task.name, options);
+  if (typeof options.displayName === 'function') {
+    return options.displayName.call(task, task.name, options);
   }
   var color = options.colors ? 'cyan' : 'clear';
   return utils[color](task.name);
 }
 
-function defaultTime(run, type, options) {
+/**
+ * Override how the run times are displayed.
+ *
+ * ```js
+ * var formatTime = require('time-stamp')
+ * var options = {
+ *   displayTime: function(time, opts) {
+ *     // `this` is the entire `run` object
+ *     var formatted = formatTime('HH:mm:ss.ms', time);
+ *     return 'Time: ' + (opts.colors ? grey(formatted) : formatted);
+ *   }
+ * };
+ *
+ * composer.use(runtimes(options));
+ * ```
+ *
+ * @param  {Date} `time` Javascript `Date` object.
+ * @param  {Object} `options` Options passed to `runtimes` and extend with application specific options.
+ * @return {String} display time
+ * @api public
+ */
+
+function displayTime(run, type, options) {
   options = options || {};
-  if (typeof options.defaultTime === 'function') {
-    return options.defaultTime.call(run, run.date[type], options);
+  if (typeof options.displayTime === 'function') {
+    return options.displayTime.call(run, run.date[type], options);
   }
   var color = options.colors ? 'grey' : 'clear';
   return utils[color](utils.time('HH:mm:ss.ms', run.date[type]));
 }
 
-function defaultDuration(run, options) {
+/**
+ * Override how the run duration is displayed.
+ *
+ * ```js
+ * var pretty = require('pretty-time');
+ * var options = {
+ *   displayDuration: function(duration, opts) {
+ *     // `this` is the entire `run` object
+ *     var formatted = pretty(duration, 'μs', 2);
+ *     return 'Duration: ' + (opts.colors ? magenta(formatted) : formatted);
+ *   }
+ * };
+ *
+ * composer.use(runtimes(options));
+ * ```
+ *
+ * @param  {Array} `duration` Array from `process.hrtime()`
+ * @param  {Object} `options` Options passed to `runtimes` and extend with application specific options.
+ * @return {String} display duration
+ * @api public
+ */
+
+function displayDuration(run, options) {
   options = options || {};
-  if (typeof options.defaultDuration === 'function') {
-    return options.defaultDuration.call(run, run.hr.duration, options);
+  if (typeof options.displayDuration === 'function') {
+    return options.displayDuration.call(run, run.hr.duration, options);
   }
   var color = options.colors ? 'magenta' : 'clear';
   return utils[color](utils.pretty(run.hr.duration, 2, 'μs'));
