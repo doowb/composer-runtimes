@@ -7,14 +7,19 @@
 
 'use strict';
 
-var lazy = require('lazy-cache')(require);
-lazy('ansi-grey', 'grey');
-lazy('ansi-cyan', 'cyan');
-lazy('time-stamp', 'time');
-lazy('ansi-green', 'green');
-lazy('pretty-time', 'pretty');
-lazy('ansi-magenta', 'magenta');
-lazy('extend-shallow', 'extend');
-lazy('success-symbol', 'success');
-module.exports = lazy;
+var utils = require('lazy-cache')(require);
+var fn = require;
+require = utils;
+
+require('ansi-grey', 'grey');
+require('ansi-cyan', 'cyan');
+require('time-stamp', 'time');
+require('ansi-green', 'green');
+require('pretty-time', 'pretty');
+require('ansi-magenta', 'magenta');
+require('extend-shallow', 'extend');
+require('success-symbol', 'success');
+
+require = fn;
+module.exports = utils;
 
