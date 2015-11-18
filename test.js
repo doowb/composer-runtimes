@@ -25,9 +25,10 @@ describe('composer-runtimes', function () {
       if (err) return done(err);
       try {
         assert.equal(count, 1);
-        assert.equal(output.length, 2);
+        assert.equal(output.length, 4);
         assert.notEqual(output[0][0].indexOf('starting'), -1);
-        assert.notEqual(output[1][0].indexOf('finished'), -1);
+        assert.notEqual(output[1][0].indexOf('starting'), -1);
+        assert.notEqual(output[2][0].indexOf('finished'), -1);
       } catch (err) {
         return done(err);
       }
@@ -48,9 +49,10 @@ describe('composer-runtimes', function () {
       if (err) return done(err);
       try {
         assert.equal(count, 1);
-        assert.equal(output.length, 2);
+        assert.equal(output.length, 4);
         assert.notEqual(output[0][0].indexOf('starting'), -1);
-        assert.notEqual(output[1][0].indexOf('finished'), -1);
+        assert.notEqual(output[1][0].indexOf('starting'), -1);
+        assert.notEqual(output[2][0].indexOf('finished'), -1);
         assert.equal(output[0][0].indexOf('\u001b'), -1);
         assert.equal(output[1][0].indexOf('\u001b'), -1);
       } catch (err) {
@@ -73,9 +75,10 @@ describe('composer-runtimes', function () {
       if (err) return done(err);
       try {
         assert.equal(count, 1);
-        assert.equal(output.length, 2);
+        assert.equal(output.length, 4);
         assert.notEqual(output[0][0].indexOf('starting'), -1);
-        assert.notEqual(output[1][0].indexOf('finished'), -1);
+        assert.notEqual(output[1][0].indexOf('starting'), -1);
+        assert.notEqual(output[2][0].indexOf('finished'), -1);
       } catch (err) {
         return done(err);
       }
@@ -89,7 +92,7 @@ describe('composer-runtimes', function () {
     var options = {
       displayName: function(name, opts) {
         called.push('displayName');
-        return name.toUpperCase();
+        return name && name.toUpperCase();
       },
       displayTime: function(time, opts) {
         called.push('displayTime');
@@ -112,11 +115,23 @@ describe('composer-runtimes', function () {
       if (err) return done(err);
       try {
         assert.equal(count, 1);
-        assert.equal(output.length, 2);
-        assert.equal(called.length, 5);
+        assert.equal(output.length, 4);
+        assert.equal(called.length, 10);
         assert.notEqual(output[0][0].indexOf('starting'), -1);
-        assert.notEqual(output[1][0].indexOf('finished'), -1);
-        assert.deepEqual(called, ['displayTime', 'displayName', 'displayTime', 'displayName', 'displayDuration']);
+        assert.notEqual(output[1][0].indexOf('starting'), -1);
+        assert.notEqual(output[2][0].indexOf('finished'), -1);
+        assert.deepEqual(called, [
+          'displayTime',
+          'displayName',
+          'displayTime',
+          'displayName',
+          'displayTime',
+          'displayName',
+          'displayDuration',
+          'displayTime',
+          'displayName',
+          'displayDuration'
+        ]);
       } catch (err) {
         return done(err);
       }
@@ -129,7 +144,7 @@ describe('composer-runtimes', function () {
     runtimes({colors: false})(composer);
 
     // see composer-errors for error messages
-    composer.on('error', function (err) {
+    composer.on('task:error', function (err) {
       process.stderr.write('ERROR', err);
     });
 
@@ -140,10 +155,11 @@ describe('composer-runtimes', function () {
     composer.build('test', function (err) {
       var output = restore();
       try {
-        assert.equal(output.length, 2);
+        assert.equal(output.length, 3);
         assert.notEqual(output[0][0].indexOf('starting'), -1);
-        assert.equal(output[1][0].indexOf('finished'), -1);
-        assert.notEqual(output[1][0].indexOf('ERROR'), -1);
+        assert.notEqual(output[1][0].indexOf('starting'), -1);
+        assert.equal(output[2][0].indexOf('finished'), -1);
+        assert.notEqual(output[2][0].indexOf('ERROR'), -1);
       } catch (err) {
         return done(err);
       }

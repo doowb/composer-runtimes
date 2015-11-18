@@ -48,6 +48,14 @@ function runtimes (options) {
     var log = write(stream);
 
     // setup some listeners
+    app.on('starting', function(app, build) {
+      log('', displayTime(build, 'start', opts), 'starting', displayName(app, opts), '\n');
+    });
+
+    app.on('finished', function(app, build) {
+      log('', displayTime(build, 'end', opts), 'finished', displayName(app, opts), displayDuration(build, opts), '\n');
+    });
+
     app.on('task:starting', function (task, run) {
       log('', displayTime(run, 'start', opts), 'starting', displayName(task, opts), '\n');
     });
@@ -85,7 +93,7 @@ function displayName(task, options) {
     name = options.displayName.call(task, task.name, options);
   }
   var color = options.colors ? 'cyan' : 'clear';
-  return utils[color](name);
+  return utils[color]((name && name.length) ? name : '');
 }
 
 /**
