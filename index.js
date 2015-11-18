@@ -48,11 +48,11 @@ function runtimes (options) {
     var log = write(stream);
 
     // setup some listeners
-    app.on('starting', function (task, run) {
+    app.on('task:starting', function (task, run) {
       log('', displayTime(run, 'start', opts), 'starting', displayName(task, opts), '\n');
     });
 
-    app.on('finished', function (task, run) {
+    app.on('task:finished', function (task, run) {
       log('', displayTime(run, 'end', opts), 'finished', displayName(task, opts), displayDuration(run, opts), '\n');
     });
   };
@@ -65,7 +65,7 @@ function runtimes (options) {
  * var options = {
  *   displayName: function(name, opts) {
  *     // `this` is the entire `task` object
- *     return 'Task: ' + (opts.colors ? cyan(name) : name);
+ *     return 'Task: ' + name;
  *   }
  * };
  *
@@ -80,11 +80,12 @@ function runtimes (options) {
 
 function displayName(task, options) {
   options = options || {};
+  var name = task.name;
   if (typeof options.displayName === 'function') {
-    return options.displayName.call(task, task.name, options);
+    name = options.displayName.call(task, task.name, options);
   }
   var color = options.colors ? 'cyan' : 'clear';
-  return utils[color](task.name);
+  return utils[color](name);
 }
 
 /**
@@ -96,7 +97,7 @@ function displayName(task, options) {
  *   displayTime: function(time, opts) {
  *     // `this` is the entire `run` object
  *     var formatted = formatTime('HH:mm:ss.ms', time);
- *     return 'Time: ' + (opts.colors ? grey(formatted) : formatted);
+ *     return 'Time: ' + formatted;
  *   }
  * };
  *
@@ -111,11 +112,13 @@ function displayName(task, options) {
 
 function displayTime(run, type, options) {
   options = options || {};
+  var time = run.date[type];
+  var formatted = '';
   if (typeof options.displayTime === 'function') {
-    return options.displayTime.call(run, run.date[type], options);
+    formatted = options.displayTime.call(run, time, options);
   }
   var color = options.colors ? 'grey' : 'clear';
-  return utils[color](utils.time('HH:mm:ss.ms', run.date[type]));
+  return utils[color]((formatted && formatted.length) ? formatted : utils.time('HH:mm:ss.ms', time));
 }
 
 /**
@@ -127,7 +130,7 @@ function displayTime(run, type, options) {
  *   displayDuration: function(duration, opts) {
  *     // `this` is the entire `run` object
  *     var formatted = pretty(duration, 'μs', 2);
- *     return 'Duration: ' + (opts.colors ? magenta(formatted) : formatted);
+ *     return 'Duration: ' + formatted;
  *   }
  * };
  *
@@ -142,11 +145,13 @@ function displayTime(run, type, options) {
 
 function displayDuration(run, options) {
   options = options || {};
+  var duration = run.hr.duration;
+  var formatted = '';
   if (typeof options.displayDuration === 'function') {
-    return options.displayDuration.call(run, run.hr.duration, options);
+    formatted = options.displayDuration.call(run, duration, options);
   }
   var color = options.colors ? 'magenta' : 'clear';
-  return utils[color](utils.pretty(run.hr.duration, 2, 'μs'));
+  return utils[color]((formatted && formatted.length) ? formatted : utils.pretty(duration, 2, 'μs'));
 }
 
 

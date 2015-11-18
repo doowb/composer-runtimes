@@ -83,6 +83,47 @@ describe('composer-runtimes', function () {
     });
   });
 
+  it('should override display methods', function (done) {
+    var restore = capture(process.stderr);
+    var called = [];
+    var options = {
+      displayName: function(name, opts) {
+        called.push('displayName');
+        return name.toUpperCase();
+      },
+      displayTime: function(time, opts) {
+        called.push('displayTime');
+        return time.toTimeString();
+      },
+      displayDuration: function(duration, opts) {
+        called.push('displayDuration');
+        return duration;
+      }
+    };
+
+    runtimes(options)(composer);
+    var count = 0;
+    composer.task('test', function (cb) {
+      count++;
+      cb();
+    });
+    composer.build('test', function (err) {
+      var output = restore();
+      if (err) return done(err);
+      try {
+        assert.equal(count, 1);
+        assert.equal(output.length, 2);
+        assert.equal(called.length, 5);
+        assert.notEqual(output[0][0].indexOf('starting'), -1);
+        assert.notEqual(output[1][0].indexOf('finished'), -1);
+        assert.deepEqual(called, ['displayTime', 'displayName', 'displayTime', 'displayName', 'displayDuration']);
+      } catch (err) {
+        return done(err);
+      }
+      done();
+    });
+  });
+
   it('should listen for errors on tasks', function (done) {
     var restore = capture(process.stderr);
     runtimes({colors: false})(composer);
