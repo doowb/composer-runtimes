@@ -15,7 +15,6 @@ var utils = require('./utils');
  * ```js
  * runtimes({colors: false})(composer);
  * ```
- *
  * @param  {Object} `options` Options to specify color output and stream to write to.
  * @param  {Boolean} `options.colors` Show ansi colors or not. `true` by default
  * @param  {Stream} `options.stream` Output stream to write to. `process.stderr` by default.
@@ -25,42 +24,48 @@ var utils = require('./utils');
  * @api public
  */
 
-function runtimes (options) {
+function runtimes(options) {
   options = options || {};
 
-  return function plugin (app) {
-    if (app.runtimes) {
-      return;
-    }
+  return function plugin(app) {
+    if (app.hasRuntimes) return;
+    app.hasRuntimes = true;
 
-    app.runtimes = true;
     var opts = utils.extend({}, options, app.options && app.options.runtimes);
-
     if (typeof opts.colors === 'undefined') {
       opts.colors = true;
     }
 
     // use the stderr stream by default so other output
     // can be piped into a file with `> file.txt`
-    var stream = opts.stream || process.stderr;
-    var log = write(stream);
+    var log = write(opts.stream || process.stderr);
 
     // setup some listeners
     app.on('starting', function(app, build) {
-      log('', displayTime(build, 'start', opts), 'starting', displayName(app, opts), '\n');
+      logStarting(build, app);
     });
 
     app.on('finished', function(app, build) {
-      log('', displayTime(build, 'end', opts), 'finished', displayName(app, opts), displayDuration(build, opts), '\n');
+      logFinished(build, app);
     });
 
-    app.on('task:starting', function (task, run) {
-      log('', displayTime(run, 'start', opts), 'starting', displayName(task, opts), '\n');
+    app.on('task:starting', function(task, run) {
+      logStarting(run, task);
     });
 
-    app.on('task:finished', function (task, run) {
-      log('', displayTime(run, 'end', opts), 'finished', displayName(task, opts), displayDuration(run, opts), '\n');
+    app.on('task:finished', function(task, run) {
+      logFinished(run, task);
     });
+
+    function logStarting(inst, obj) {
+      var time = displayTime(inst, 'start', opts);
+      log(time, 'starting', displayName(obj, opts), '\n');
+    }
+
+    function logFinished(inst, obj) {
+      var time = displayTime(inst, 'end', opts);
+      log(time, 'finished', displayName(obj, opts), displayDuration(inst, opts), '\n');
+    }
   };
 };
 
@@ -77,7 +82,6 @@ function runtimes (options) {
  *
  * composer.use(runtimes(options));
  * ```
- *
  * @param  {String} `name` Task name
  * @param  {Object} `options` Options passed to `runtimes` and extend with application specific options.
  * @return {String} display name
@@ -87,15 +91,17 @@ function runtimes (options) {
 function displayName(task, options) {
   options = options || {};
   var name = task.name;
+
   if (typeof options.displayName === 'function') {
-    name = options.displayName.call(task, task.name, options);
+    name = options.displayName.call(task, name, options);
   }
+
   var color = options.colors ? 'cyan' : 'clear';
-  return utils[color]((name && name.length) ? name : '');
+  return name ? utils[color](name) : '';
 }
 
 /**
- * Override how the run times are displayed.
+ * Override how run times are displayed.
  *
  * ```js
  * var formatTime = require('time-stamp')
@@ -106,10 +112,8 @@ function displayName(task, options) {
  *     return 'Time: ' + formatted;
  *   }
  * };
- *
  * composer.use(runtimes(options));
  * ```
- *
  * @param  {Date} `time` Javascript `Date` object.
  * @param  {Object} `options` Options passed to `runtimes` and extend with application specific options.
  * @return {String} display time
@@ -117,18 +121,25 @@ function displayName(task, options) {
  */
 
 function displayTime(run, type, options) {
-  options = options || {};
+  var opts = utils.extend({}, options);
   var time = run.date[type];
   var formatted = '';
-  if (typeof options.displayTime === 'function') {
-    formatted = options.displayTime.call(run, time, options);
+
+  if (typeof opts.displayTime === 'function') {
+    formatted = opts.displayTime.call(run, time, opts);
   }
-  var color = options.colors ? 'grey' : 'clear';
-  return utils[color]((formatted && formatted.length) ? formatted : utils.time('HH:mm:ss.ms', time));
+
+  var displayFormat = opts.displayFormat || 'HH:mm:ss';
+  var color = opts.colors ? 'gray' : 'clear';
+  var time = !(formatted && formatted.length)
+    ? utils.time(displayFormat, time)
+    : formatted;
+
+  return '[' + utils[color](time) + ']';
 }
 
 /**
- * Override how the run duration is displayed.
+ * Override how duration times are displayed.
  *
  * ```js
  * var pretty = require('pretty-time');
@@ -142,7 +153,6 @@ function displayTime(run, type, options) {
  *
  * composer.use(runtimes(options));
  * ```
- *
  * @param  {Array} `duration` Array from `process.hrtime()`
  * @param  {Object} `options` Options passed to `runtimes` and extend with application specific options.
  * @return {String} display duration
@@ -153,14 +163,18 @@ function displayDuration(run, options) {
   options = options || {};
   var duration = run.hr.duration;
   var formatted = '';
+
   if (typeof options.displayDuration === 'function') {
     formatted = options.displayDuration.call(run, duration, options);
   }
+
   var color = options.colors ? 'magenta' : 'clear';
-  return utils[color]((formatted && formatted.length) ? formatted : utils.pretty(duration, 2, 'μs'));
+  var time = !(formatted && formatted.length)
+    ? utils.pretty(duration, 2, 'μs')
+    : formatted;
+
+  return utils[color](time);
 }
-
-
 
 /**
  * Write out strings to a stream.
@@ -169,11 +183,11 @@ function displayDuration(run, options) {
  */
 
 function write(stream) {
-  return function () {
-    var len = arguments.length, i = 0;
+  return function() {
+    var len = arguments.length;
     var args = new Array(len);
     while (len--) {
-      args[i] = arguments[i++];
+      args[len] = arguments[len];
     }
     stream.write(args.join(' '));
   };
