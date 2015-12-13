@@ -41,6 +41,9 @@
     "runtimes"
   ],
   "verb": {
+    "plugins": [
+      "gulp-format-md"
+    ],
     "related": {
       "list": [
         "composer",
