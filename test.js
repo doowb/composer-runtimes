@@ -1,10 +1,10 @@
 'use strict';
 
+require('mocha');
 var assert = require('assert');
 var Composer = require('composer');
 var capture = require('capture-stream');
 var runtimes = require('./');
-
 var composer;
 
 describe('composer-runtimes', function () {

@@ -8,9 +8,6 @@
 'use strict';
 
 var utils = require('./utils');
-utils.clear = function(str) {
-  return str;
-};
 
 /**
  * Listen to composer events and output runtime information.
@@ -35,6 +32,7 @@ function runtimes (options) {
     if (app.runtimes) {
       return;
     }
+
     app.runtimes = true;
     var opts = utils.extend({}, options, app.options && app.options.runtimes);
 
